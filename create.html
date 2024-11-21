@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Создание темы - Форум</title>
-    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400&display=swap" rel="stylesheet">
-    <style>
-        body {
+    <html lang="ru">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Создание темы - Форум</title>
+        <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400&display=swap" rel="stylesheet">
+        <style>
+            body {
                 font-family: Arial, sans-serif;
                 margin: 0;
                 padding: 0;
@@ -152,80 +152,106 @@
                 display: flex;
                 align-items: center; /* Центрирование по вертикали */
             }
-    </style>
-</head>
-<body>
+        </style>
+    </head>
+    <body>
 
-<header>
-    <h1>Создание темы</h1>
-    <button onclick="location.href='profile.html'">Мой аккаунт</button>
-    <button onclick="location.href='main.html'">Главная</button>
-</header>
+    <header>
+        <h1>Создание темы</h1>
+        <button onclick="location.href='profile.html'">Мой аккаунт</button>
+        <button onclick="location.href='main.html'">Главная</button>
+    </header>
 
-<div class="container">
-    <h2>Создание темы</h2>
-    <div id="welcomeMessage"></div>
+    <div class="container">
+        <h2>Создание темы</h2>
+        <div id="welcomeMessage"></div>
 
-    <div class="formatting-toolbar" id="adminToolbar" style="display: none;">
-        <!-- Ваши кнопки форматирования -->
+        <div class="formatting-toolbar" id="adminToolbar" style="display: none;">
+            <select id="fontSelect" onchange="formatText('font')">
+                <option value="">Выберите шрифт</option>
+                <option value="Arial">Arial</option>
+                <option value="Courier New">Courier New</option>
+                <option value="Georgia">Georgia</option>
+                <option value="Times New Roman">Times New Roman</option>
+                <option value="Verdana">Verdana</option>
+            </select>
+            <button onclick="formatText('bold')">Ж</button>
+            <button onclick="formatText('italic')">И</button>
+            <button onclick="formatText('underline')">Подчеркнутый</button>
+            <button onclick="formatText('justifyLeft')">Влево</button>
+            <button onclick="formatText('justifyCenter')">Центр</button>
+            <button onclick="formatText('justifyRight')">Вправо</button>
+            <select id="fontSize" onchange="formatText('size')">
+                <option value="">Размер шрифта</option>
+                <option value="1">Маленький</option>
+                <option value="2">Средний</option>
+                <option value="3">Большой</option>
+                <option value="4">Очень большой</option>
+            </select>
+            <select id="fontColor" onchange="formatText('color')">
+                <option value="">Цвет текста</option>
+                <option value="#000000">Черный</option>
+                <option value="#FF0000">Красный</option>
+                <option value="#00FF00">Зеленый</option>
+                <option value="#0000FF">Синий</option>
+            </select>
+            <button onclick="setStatus('ИНФОРМАЦИЯ')">ИНФОРМАЦИЯ</button>
+        </div>
+
+        <div class="form-group">
+            <label for="topicTitle">Название темы:</label>
+            <input type="text" id="topicTitle" placeholder="Введите название темы" />
+        </div>
+        <div class="form-group">
+            <label for="topicContent">Содержимое темы:</label>
+            <div id="topicContent" contenteditable="true" style="border: 1px solid #ccc; padding: 8px; min-height: 100px;" placeholder="Введите содержимое темы"></div>
+        </div>
+        <button onclick="createTopic()">Создать тему</button>
+
+        <h2>Темы:</h2>
+        <div id="topicsList"></div>
     </div>
 
-    <div class="form-group">
-        <label for="topicTitle">Название темы:</label>
-        <input type="text" id="topicTitle" placeholder="Введите название темы" />
-    </div>
-    <div class="form-group">
-        <label for="topicContent">Содержимое темы:</label>
-        <div id="topicContent" contenteditable="true" style="border: 1px solid #ccc; padding: 8px; min-height: 100px;" placeholder="Введите содержимое темы"></div>
-    </div>
-    <button onclick="createTopic()">Создать тему</button>
+    <script>
+        const TOPICS_KEY = 'topics';
+        const CURRENT_USER_KEY = 'currentUser';
+        let topics = JSON.parse(localStorage.getItem(TOPICS_KEY)) || [];
+        let currentUser = JSON.parse(localStorage.getItem(CURRENT_USER_KEY));
 
-    <h2>Темы:</h2>
-    <div id="topicsList"></div>
-</div>
-
-<script>
-    const TOPICS_KEY = 'topics';
-    const CURRENT_USER_KEY = 'currentUser';
-    let topics = JSON.parse(localStorage.getItem(TOPICS_KEY)) || [];
-    let currentUser = JSON.parse(localStorage.getItem(CURRENT_USER_KEY));
-
-    function saveTopics() {
-        localStorage.setItem(TOPICS_KEY, JSON.stringify(topics));
-    }
-
-    function createTopic() {
-        const title = document.getElementById('topicTitle').value.trim();
-        const content = document.getElementById('topicContent').innerHTML.trim();
-
-        if (title && content) {
-            const topic = {
-                userId: currentUser.id, // Убедитесь, что у пользователя есть уникальный идентификатор
-                username: currentUser.name,
-                content: content,
-                title: title,
-                comments: [],
-                status: ''
-            };
-            topics.push(topic);
-            saveTopics();
-            renderTopics();
-            clearFields();
-        } else {
-            alert('Пожалуйста, заполните все поля.');
+        function saveTopics() {
+            localStorage.setItem(TOPICS_KEY, JSON.stringify(topics));
         }
-    }
 
-    function clearFields() {
-        document.getElementById('topicTitle').value = '';
-        document.getElementById('topicContent').innerHTML = '';
-    }
+        function createTopic() {
+            const title = document.getElementById('topicTitle').value.trim();
+            const content = document.getElementById('topicContent').innerHTML.trim();
 
-    function renderTopics() {
-        const topicsList = document.getElementById('topicsList');
-        topicsList.innerHTML = '';
-        topics.forEach((topic, index) => {
-            if (topic.userId === currentUser.id) { // Фильтрация по userId
+            if (title && content) {
+                const topic = {
+                    username: currentUser.name,
+                    content: content,
+                    title: title,
+                    comments: [],
+                    status: ''
+                };
+                topics.push(topic);
+                saveTopics();
+                renderTopics();
+                clearFields();
+            } else {
+                alert('Пожалуйста, заполните все поля.');
+            }
+        }
+
+        function clearFields() {
+            document.getElementById('topicTitle').value = '';
+            document.getElementById('topicContent').innerHTML = '';
+        }
+
+        function renderTopics() {
+            const topicsList = document.getElementById('topicsList');
+            topicsList.innerHTML = '';
+            topics.forEach((topic, index) => {
                 const topicDiv = document.createElement('div');
                 topicDiv.classList.add('topic');
                 topicDiv.innerHTML = `
@@ -260,129 +286,129 @@
                 `;
                 topicsList.appendChild(topicDiv);
                 renderComments(topic.comments, index);
+            });
+        }
+
+        function getUsernameClass(username) {
+            return username === "Pedro_Sheldy" || username === "lilfreat" ? 'special-username' : 'user-username';
+        }
+
+        function addComment(topicIndex) {
+            const commentInput = document.getElementById(`commentText-${topicIndex}`);
+            const commentText = commentInput.value.trim();
+
+            if (commentText) {
+                const comment = {
+                    username: currentUser.name,
+                    text: commentText
+                };
+                topics[topicIndex].comments.push(comment);
+                saveTopics();
+                renderTopics();
+            } else {
+                alert('Комментарий не может быть пустым.');
             }
-        });
-    }
-
-    function getUsernameClass(username) {
-        return username === "Pedro_Sheldy" || username === "lilfreat" ? 'special-username' : 'user-username';
-    }
-
-    function addComment(topicIndex) {
-        const commentInput = document.getElementById(`commentText-${topicIndex}`);
-        const commentText = commentInput.value.trim();
-
-        if (commentText) {
-            const comment = {
-                username: currentUser.name,
-                text: commentText
-            };
-            topics[topicIndex].comments.push(comment);
-            saveTopics();
-            renderTopics();
-        } else {
-            alert('Комментарий не может быть пустым.');
         }
-    }
 
-    function deleteComment(topicIndex, commentIndex) {
-        if (confirm('Вы уверены, что хотите удалить этот комментарий?')) {
-            topics[topicIndex].comments.splice(commentIndex, 1);
-            saveTopics();
-            renderTopics();
-        }
-    }
-
-    function approveTopic(index) {
-        topics[index].status = 'Одобрено';
-        saveTopics();
-        renderTopics();
-    }
-
-    function rejectTopic(index) {
-        topics[index].status = 'Отказано';
-        saveTopics();
-        renderTopics();
-    }
-
-    function setStatus(newStatus) {
-        const topic = topics[topics.length - 1]; // Устанавливаем статус последней темы
-        if (topic) {
-            topic.status = newStatus;
-            saveTopics();
-            renderTopics();
-        }
-    }
-
-    function deleteTopic(index) {
-        if (confirm('Вы уверены, что хотите удалить эту тему?')) {
-            topics.splice(index, 1);
-            saveTopics();
-            renderTopics();
-        }
-    }
-
-    function formatText(command) {
-        const fontSizeSelect = document.getElementById('fontSize');
-        const fontSelect = document.getElementById('fontSelect');
-        
-        if (command === 'size' && fontSizeSelect.value) {
-            document.execCommand('fontSize', false, fontSizeSelect.value);
-            const fontSize = fontSizeSelect.value;
-            const contentDiv = document.getElementById('topicContent');
-            const sizeMap = { '1': 'small', '2': 'medium', '3': 'large', '4': 'x-large' };
-            const newSize = sizeMap[fontSize];
-
-            document.execCommand('styleWithCSS', true, null);
-            document.execCommand('fontSize', false, newSize);
-        } else if (command === 'font' && fontSelect.value) {
-            document.execCommand('fontName', false, fontSelect.value);
-        } else if (command === 'color') {
-            const color = document.getElementById('fontColor').value;
-            document.execCommand('foreColor', false, color);
-        } else if (command === 'justifyLeft' || command === 'justifyCenter' || command === 'justifyRight') {
-            document.execCommand(command, false, null);
-        } else {
-            document.execCommand(command, false, null);
-        }
-        document.getElementById('topicContent').focus();
-    }
-
-    function renderComments(comments, topicIndex) {
-        const commentsDiv = document.getElementById(`comments-${topicIndex}`);
-        commentsDiv.innerHTML = '';
-        comments.forEach((comment, commentIndex) => {
-            const commentDiv = document.createElement('div');
-            commentDiv.classList.add('comment');
-            commentDiv.innerHTML = `
-                <strong class="${getUsernameClass(comment.username)}">${comment.username}</strong>: ${comment.text}
-                <button class="delete-button" onclick="deleteComment(${topicIndex}, ${commentIndex})">Удалить</button>
-            `;
-            commentsDiv.appendChild(commentDiv);
-        });
-    }
-
-    function isAdmin() {
-        return currentUser.role === 'admin' || currentUser.name === "lilfreat";
-    }
-
-    window.onload = function() {
-        if (!currentUser) {
-            alert('Пожалуйста, войдите в систему для создания темы.');
-            window.location.href = 'login.html';
-        } else {
-            if (currentUser.name === "Pedro_Sheldy" || currentUser.name === "lilfreat") {
-                currentUser.role = 'admin';
+        function deleteComment(topicIndex, commentIndex) {
+            if (confirm('Вы уверены, что хотите удалить этот комментарий?')) {
+                topics[topicIndex].comments.splice(commentIndex, 1);
+                saveTopics();
+                renderTopics();
             }
+        }
 
-            document.getElementById('welcomeMessage').innerText = `Добро пожаловать, ${currentUser.name}!`;
-            if (isAdmin()) {
-                document.getElementById('adminToolbar').style.display = 'flex'; // Показать панель инструментов администратора
-            }
+        function approveTopic(index) {
+            topics[index].status = 'Одобрено';
+            saveTopics();
             renderTopics();
         }
-    };
-</script>
 
-</body>
-</html>
+        function rejectTopic(index) {
+            topics[index].status = 'Отказано';
+            saveTopics();
+            renderTopics();
+        }
+
+        function setStatus(newStatus) {
+            const topic = topics[topics.length - 1]; // Устанавливаем статус последней темы
+            if (topic) {
+                topic.status = newStatus;
+                saveTopics();
+                renderTopics();
+            }
+        }
+
+        function deleteTopic(index) {
+            if (confirm('Вы уверены, что хотите удалить эту тему?')) {
+                topics.splice(index, 1);
+                saveTopics();
+                renderTopics();
+            }
+        }
+
+        function formatText(command) {
+            const fontSizeSelect = document.getElementById('fontSize');
+            const fontSelect = document.getElementById('fontSelect');
+            
+            if (command === 'size' && fontSizeSelect.value) {
+                document.execCommand('fontSize', false, fontSizeSelect.value);
+                const fontSize = fontSizeSelect.value;
+                const contentDiv = document.getElementById('topicContent');
+                const sizeMap = { '1': 'small', '2': 'medium', '3': 'large', '4': 'x-large' };
+                const newSize = sizeMap[fontSize];
+
+                document.execCommand('styleWithCSS', true, null);
+                document.execCommand('fontSize', false, newSize);
+            } else if (command === 'font' && fontSelect.value) {
+                document.execCommand('fontName', false, fontSelect.value);
+            } else if (command === 'color') {
+                const color = document.getElementById('fontColor').value;
+                document.execCommand('foreColor', false, color);
+            } else if (command === 'justifyLeft' || command === 'justifyCenter' || command === 'justifyRight') {
+                document.execCommand(command, false, null);
+            } else {
+                document.execCommand(command, false, null);
+            }
+            document.getElementById('topicContent').focus();
+        }
+
+        function renderComments(comments, topicIndex) {
+            const commentsDiv = document.getElementById(`comments-${topicIndex}`);
+            commentsDiv.innerHTML = '';
+            comments.forEach((comment, commentIndex) => {
+                const commentDiv = document.createElement('div');
+                commentDiv.classList.add('comment');
+                commentDiv.innerHTML = `
+                    <strong class="${getUsernameClass(comment.username)}">${comment.username}</strong>: ${comment.text}
+                    <button class="delete-button" onclick="deleteComment(${topicIndex}, ${commentIndex})">Удалить</button>
+                `;
+                commentsDiv.appendChild(commentDiv);
+            });
+        }
+
+        function isAdmin() {
+            return currentUser.role === 'admin' || currentUser.name === "lilfreat";
+        }
+
+        window.onload = function() {
+            if (!currentUser) {
+                alert('Пожалуйста, войдите в систему для создания темы.');
+                window.location.href = 'login.html';
+            } else {
+                // Ensure Pedro_Sheldy and lilfreat always have admin rights
+                if (currentUser.name === "Pedro_Sheldy" || currentUser.name === "lilfreat") {
+                    currentUser.role = 'admin';
+                }
+
+                document.getElementById('welcomeMessage').innerText = `Добро пожаловать, ${currentUser.name}!`;
+                if (isAdmin()) {
+                    document.getElementById('adminToolbar').style.display = 'flex'; // Show admin toolbar
+                }
+                renderTopics();
+            }
+        };
+    </script>
+
+    </body>
+    </html>
