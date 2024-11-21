@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация - Форум</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400&display=swap" rel="stylesheet">
+    <style>
+         body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            background-image: url('fon.png'); /* Add the background image */
+            background-size: cover; /* Cover the entire viewport */
+            background-repeat: no-repeat; /* Do not repeat the image */
+            background-position: center; /* Center the image */
+        }
+        header {
+            background-color: #ffffff;
+            color: rgb(0, 0, 0);
+            padding: 15px;
+            text-align: center;
+            font-family: 'Comfortaa', cursive;
+        }
+        .container {
+            max-width: 400px;
+            margin: 50px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #CCC;
+            font-family: 'Comfortaa', cursive; 
+            color: rgb(0, 0, 0);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: block;
+            font-weight: bold;
+            margin: 10px auto;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Регистрация</h1>
+    <button onclick="window.location.href='login.html'">Вход</button>
+</header>
+
+<div class="container">
+    <div class="form-group">
+        <label for="username">Имя пользователя:</label>
+        <input type="text" id="username" placeholder="Введите имя пользователя" />
+    </div>
+    <div class="form-group">
+        <label for="password">Пароль:</label>
+        <input type="password" id="password" placeholder="Введите пароль" />
+    </div>
+    <button onclick="registerUser()">Зарегистрироваться</button>
+</div>
+
+<script>
+    const USERS_KEY = 'users';
+    const CURRENT_USER_KEY = 'currentUser';
+
+    function loadData() {
+        return JSON.parse(localStorage.getItem(USERS_KEY)) || [];
+    }
+
+    function saveData(users) {
+        localStorage.setItem(USERS_KEY, JSON.stringify(users));
+    }
+
+    function registerUser() {
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value.trim();
+        if (username && password) {
+            const users = loadData();
+            const userExists = users.find(user => user.name === username);
+            if (userExists) {
+                alert('Пользователь с таким именем уже существует.');
+            } else {
+                const newUser = { name: username, password: password, role: 'user' };
+                users.push(newUser);
+                saveData(users);
+                alert('Регистрация успешна!');
+                localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(newUser)); // Save the current user
+                window.location.href = 'create.html'; // Redirect to create.html
+            }
+        } else {
+            alert('Пожалуйста, введите имя пользователя и пароль.');
+        }
+    }
+</script>
+
+</body>
+</html>

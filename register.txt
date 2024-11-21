@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Регистрация</h1>
+    <div class="form-group">
+        <label for="regUsername">Имя пользователя:</label>
+        <input type="text" id="regUsername" placeholder="Введите ваше имя" />
+    </div>
+    <div class="form-group">
+        <label for="regPassword">Пароль:</label>
+        <input type="password" id="regPassword" placeholder="Введите ваш пароль" />
+    </div>
+    <button onclick="registerUser()">Зарегистрироваться</button>
+</div>
+
+<script>
+    const USERS_KEY = 'users';
+
+    function registerUser() {
+        const username = document.getElementById('regUsername').value.trim();
+        const password = document.getElementById('regPassword').value.trim();
+        if (username && password) {
+            const users = JSON.parse(localStorage.getItem(USERS_KEY)) || [];
+            // Проверка, существует ли пользователь с таким именем
+            if (users.some(user => user.name === username)) {
+                alert('Пользователь с таким именем уже существует.');
+                return;
+            }
+
+            // Создание нового пользователя
+            const newUser = {
+                name: username,
+                password: password,
+                role: (username === 'fimacuzz') ? 'admin' : 'user' // Назначение админа для fimacuzz
+            };
+            users.push(newUser);
+            localStorage.setItem(USERS_KEY, JSON.stringify(users)); // Сохранение пользователей
+            alert(`Пользователь ${username} зарегистрирован как ${newUser.role}.`);
+            // Перенаправление на страницу форума
+            window.location.href = "forum.html";
+        } else {
+            alert('Пожалуйста, заполните все поля.');
+        }
+    }
+</script>
+
+</body>
+</html>
