@@ -6,6 +6,7 @@
     <title>Создание темы - Форум</title>
     <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400&display=swap" rel="stylesheet">
     <style>
+        /* Стили остаются без изменений */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -396,16 +397,16 @@
             alert('Пожалуйста, войдите в систему для создания темы.');
             window.location.href = 'login.html';
         } else {
-            // Ensure Pedro_Sheldy and lilfreat always have admin rights
+            // Убедитесь, что Pedro_Sheldy и lilfreat всегда имеют права администратора
             if (currentUser.name === "Pedro_Sheldy" || currentUser.name === "lilfreat") {
                 currentUser.role = 'admin';
             }
 
             document.getElementById('welcomeMessage').innerText = `Добро пожаловать, ${currentUser.name}!`;
             if (isAdmin()) {
-                document.getElementById('adminToolbar').style.display = 'flex'; // Show admin toolbar
+                document.getElementById('adminToolbar').style.display = 'flex'; // Показать панель инструментов администратора
             }
-            renderTopics();
+            renderTopics(); // Отобразить все темы при загрузке
         }
     };
 </script>
