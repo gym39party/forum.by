@@ -73,6 +73,7 @@
         <input type="text" id="usernameInput" placeholder="Введите ник пользователя" />
     </div>
     <button onclick="grantAdminRights()">Выдать права</button>
+    <button onclick="banUser()">Заблокировать пользователя</button>
     <div id="message"></div>
 </div>
 
@@ -85,18 +86,31 @@
         const user = users.find(u => u.name === username);
 
         if (user) {
-            user.role = 'admin'; // Обновляем роль пользователя
-            localStorage.setItem(USERS_KEY, JSON.stringify(users)); // Сохраняем изменения
+            user.role = 'admin'; 
+            localStorage.setItem(USERS_KEY, JSON.stringify(users)); 
             document.getElementById('message').innerText = `Пользователю ${username} выданы права администратора.`;
         } else {
             document.getElementById('message').innerText = 'Пользователь не найден.';
         }
     }
 
+    function banUser() {
+        const username = document.getElementById('usernameInput').value.trim();
+        const reason = prompt("Укажите причину блокировки:");
+        const user = users.find(u => u.name === username);
+
+        if (user) {
+            user.banned = true; 
+            user.banReason = reason; 
+            localStorage.setItem(USERS_KEY, JSON.stringify(users)); 
+            document.getElementById('message').innerText = `Пользователь ${username} заблокирован. Причина: ${reason}`;
+        } else {
+            document.getElementById('message').innerText = 'Пользователь не найден.';
+        }
+    }
+
     window.onload = function() {
-        // Загрузка пользователей из localStorage
         users = JSON.parse(localStorage.getItem(USERS_KEY)) || [];
-        // Для тестирования: добавим пользователей, если их нет
         if (!users.length) {
             users = [
                 { name: 'Pedro_Sheldy', role: 'user' },
