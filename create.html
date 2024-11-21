@@ -6,7 +6,6 @@
     <title>Создание темы - Форум</title>
     <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400&display=swap" rel="stylesheet">
     <style>
-        /* Стили остаются без изменений */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -92,10 +91,9 @@
         }
         .status-rejected {
             background-color: red;
-            color: white;
         }
         .status-info {
-            background-color: green;
+            background-color: blue;
         }
         .comment {
             border: 1px solid #ccc;
@@ -106,14 +104,14 @@
             justify-content: space-between;
             align-items: center;
         }
-        .comment-buttons {
-            margin-top: 5px;
+        .comment-input {
+            margin-top: 10px;
         }
         .admin-username {
             color: green;
         }
         .special-username {
-            color: green; /* Зеленый ник для специальных пользователей */
+            color: green;
         }
         .user-username {
             color: black;
@@ -138,20 +136,15 @@
             background-color: #2196F3;
             color: white;
         }
-        .edit-textarea {
-            display: none;
-            width: 100%;
-            margin-top: 10px;
-        }
         .avatar {
-            width: 40px; /* Размер аватарки */
-            height: 40px; /* Размер аватарки */
-            border-radius: 50%; /* Круглая форма */
-            margin-right: 10px; /* Отступ справа */
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
         }
         .user-message {
             display: flex;
-            align-items: center; /* Центрирование по вертикали */
+            align-items: center;
         }
     </style>
 </head>
@@ -397,7 +390,6 @@
             alert('Пожалуйста, войдите в систему для создания темы.');
             window.location.href = 'login.html';
         } else {
-            // Убедитесь, что Pedro_Sheldy и lilfreat всегда имеют права администратора
             if (currentUser.name === "Pedro_Sheldy" || currentUser.name === "lilfreat") {
                 currentUser.role = 'admin';
             }
@@ -406,7 +398,7 @@
             if (isAdmin()) {
                 document.getElementById('adminToolbar').style.display = 'flex'; // Показать панель инструментов администратора
             }
-            renderTopics(); // Отобразить все темы при загрузке
+            renderTopics();
         }
     };
 </script>
