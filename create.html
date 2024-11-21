@@ -237,15 +237,9 @@
             topics.push(topic);
             saveTopics();
             renderTopics();
-            clearFields();
         } else {
             alert('Пожалуйста, заполните все поля.');
         }
-    }
-
-    function clearFields() {
-        document.getElementById('topicTitle').value = '';
-        document.getElementById('topicContent').innerHTML = '';
     }
 
     function renderTopics() {
@@ -257,7 +251,7 @@
             topicDiv.innerHTML = `
                 <div class="topic-header">
                     <div class="user-message">
-                        <img src="${currentUser.avatar || 'icon.png'}" class="avatar" alt="Аватар">
+                        <img src="avatar.png" alt="Avatar" class="avatar" /> <!-- Пример аватарки -->
                         <strong class="${getUsernameClass(topic.username)}">${topic.username}</strong>
                     </div>
                     <div class="status ${topic.status === 'Одобрено' ? 'status-approved' : topic.status === 'Отказано' ? 'status-rejected' : topic.status === 'ИНФОРМАЦИЯ' ? 'status-info' : ''}">
@@ -289,8 +283,18 @@
         });
     }
 
-    function getUsernameClass(username) {
-        return username === "Pedro_Sheldy" || username === "lilfreat" ? 'special-username' : 'user-username';
+    function renderComments(comments, topicIndex) {
+        const commentsDiv = document.getElementById(`comments-${topicIndex}`);
+        commentsDiv.innerHTML = '';
+        comments.forEach((comment, commentIndex) => {
+            const commentDiv = document.createElement('div');
+            commentDiv.classList.add('comment');
+            commentDiv.innerHTML = `
+                <strong class="${getUsernameClass(comment.username)}">${comment.username}</strong>: ${comment.text}
+                <button class="delete-button" onclick="deleteComment(${topicIndex}, ${commentIndex})">Удалить</button>
+            `;
+            commentsDiv.appendChild(commentDiv);
+        });
     }
 
     function addComment(topicIndex) {
@@ -330,15 +334,6 @@
         renderTopics();
     }
 
-    function setStatus(newStatus) {
-        const topic = topics[topics.length - 1]; // Устанавливаем статус последней темы
-        if (topic) {
-            topic.status = newStatus;
-            saveTopics();
-            renderTopics();
-        }
-    }
-
     function deleteTopic(index) {
         if (confirm('Вы уверены, что хотите удалить эту тему?')) {
             topics.splice(index, 1);
@@ -347,48 +342,17 @@
         }
     }
 
-    function formatText(command) {
-        const fontSizeSelect = document.getElementById('fontSize');
-        const fontSelect = document.getElementById('fontSelect');
-        
-        if (command === 'size' && fontSizeSelect.value) {
-            document.execCommand('fontSize', false, fontSizeSelect.value);
-            const fontSize = fontSizeSelect.value;
-            const contentDiv = document.getElementById('topicContent');
-            const sizeMap = { '1': 'small', '2': 'medium', '3': 'large', '4': 'x-large' };
-            const newSize = sizeMap[fontSize];
-
-            document.execCommand('styleWithCSS', true, null);
-            document.execCommand('fontSize', false, newSize);
-        } else if (command === 'font' && fontSelect.value) {
-            document.execCommand('fontName', false, fontSelect.value);
-        } else if (command === 'color') {
-            const color = document.getElementById('fontColor').value;
-            document.execCommand('foreColor', false, color);
-        } else if (command === 'justifyLeft' || command === 'justifyCenter' || command === 'justifyRight') {
-            document.execCommand(command, false, null);
-        } else {
-            document.execCommand(command, false, null);
-        }
-        document.getElementById('topicContent').focus();
-    }
-
-    function renderComments(comments, topicIndex) {
-        const commentsDiv = document.getElementById(`comments-${topicIndex}`);
-        commentsDiv.innerHTML = '';
-        comments.forEach((comment, commentIndex) => {
-            const commentDiv = document.createElement('div');
-            commentDiv.classList.add('comment');
-            commentDiv.innerHTML = `
-                <strong class="${getUsernameClass(comment.username)}">${comment.username}</strong>: ${comment.text}
-                <button class="delete-button" onclick="deleteComment(${topicIndex}, ${commentIndex})">Удалить</button>
-            `;
-            commentsDiv.appendChild(commentDiv);
-        });
+    function getUsernameClass(username) {
+        return username === "Pedro_Sheldy" || username === "lilfreat" ? 'special-username' : 'user-username';
     }
 
     function isAdmin() {
         return currentUser.role === 'admin' || currentUser.name === "lilfreat";
+    }
+
+    function syncData() {
+        topics = JSON.parse(localStorage.getItem(TOPICS_KEY)) || [];
+        renderTopics();
     }
 
     window.onload = function() {
@@ -396,17 +360,15 @@
             alert('Пожалуйста, войдите в систему для создания темы.');
             window.location.href = 'login.html';
         } else {
-            // Ensure Pedro_Sheldy and lilfreat always have admin rights
-            if (currentUser.name === "Pedro_Sheldy" || currentUser.name === "lilfreat") {
-                currentUser.role = 'admin';
-            }
-
             document.getElementById('welcomeMessage').innerText = `Добро пожаловать, ${currentUser.name}!`;
             if (isAdmin()) {
                 document.getElementById('adminToolbar').style.display = 'flex'; // Show admin toolbar
             }
             renderTopics();
         }
+
+        // Периодическое обновление списка тем
+        setInterval(syncData, 3000); // 3 секунды для синхронизации
     };
 </script>
 
