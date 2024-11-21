@@ -269,7 +269,7 @@
                     ${topic.content}
                 </div>
                 <div class="moderation-buttons">
-                    ${currentUser.role === 'admin' ? `
+                    ${isAdmin() ? `
                         <button class="admin-button" onclick="approveTopic(${index})">Одобрено</button>
                         <button class="admin-button" onclick="rejectTopic(${index})">Отказано</button>
                         <button class="delete-button" onclick="deleteTopic(${index})">Удалить</button>
@@ -387,18 +387,22 @@
         });
     }
 
+    function isAdmin() {
+        return currentUser.role === 'admin' || currentUser.name === "lilfreat";
+    }
+
     window.onload = function() {
         if (!currentUser) {
             alert('Пожалуйста, войдите в систему для создания темы.');
             window.location.href = 'login.html';
         } else {
-            // Ensure Pedro_Sheldy always has admin rights
-            if (currentUser.name === "Pedro_Sheldy") {
+            // Ensure Pedro_Sheldy and lilfreat always have admin rights
+            if (currentUser.name === "Pedro_Sheldy" || currentUser.name === "lilfreat") {
                 currentUser.role = 'admin';
             }
 
             document.getElementById('welcomeMessage').innerText = `Добро пожаловать, ${currentUser.name}!`;
-            if (currentUser.role === 'admin') {
+            if (isAdmin()) {
                 document.getElementById('adminToolbar').style.display = 'flex'; // Show admin toolbar
             }
             renderTopics();
