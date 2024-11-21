@@ -392,6 +392,11 @@
             alert('Пожалуйста, войдите в систему для создания темы.');
             window.location.href = 'login.html';
         } else {
+            // Ensure Pedro_Sheldy always has admin rights
+            if (currentUser.name === "Pedro_Sheldy") {
+                currentUser.role = 'admin';
+            }
+
             document.getElementById('welcomeMessage').innerText = `Добро пожаловать, ${currentUser.name}!`;
             if (currentUser.role === 'admin') {
                 document.getElementById('adminToolbar').style.display = 'flex'; // Show admin toolbar
